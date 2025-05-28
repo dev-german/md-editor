@@ -1,0 +1,49 @@
+{
+    "name": "markdown-editor-sync",
+    "displayName": "Markdown Editor Sync",
+    "description": "A VS Code extension for a synchronized Markdown editor with a live preview and toolbar.",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:markdown-editor-sync.showPreview"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "markdown-editor-sync.showPreview",
+                "title": "Show Synced Markdown Preview",
+                "category": "MarkdownEditorSync"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.80.0",
+        "@types/glob": "^8.1.0",
+        "@types/mocha": "^10.0.1",
+        "@types/node": "20.x",
+        "@types/markdown-it": "^14.1.2",
+        "eslint": "^8.44.0",
+        "@typescript-eslint/eslint-plugin": "^5.62.0",
+        "@typescript-eslint/parser": "^5.62.0",
+        "glob": "^8.1.0",
+        "mocha": "^10.2.0",
+        "typescript": "^5.1.6",
+        "@vscode/test-electron": "^2.3.9"
+    },
+    "dependencies": {
+        "markdown-it": "^14.1.0"
+    }
+}
