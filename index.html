@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Markdown Editor</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="app-content">
+      <div id="file-navigator"></div>
+      <div class="editor-area">
+        <div id="current-file-display">No file selected</div>
+        <div class="editor-panes">
+          <textarea id="markdown-editor" placeholder="Select a Markdown file to begin editing..." readonly></textarea>
+          <div id="markdown-preview"></div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="open-folder-btn">Open Project Folder</button>
+      <button id="save-file-btn">Save File</button>
+    </div>
+    <script src="./renderer.js"></script>
+  </body>
+</html>

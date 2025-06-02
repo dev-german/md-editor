@@ -1,0 +1,104 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column; /* Main axis for app controls below editor */
+}
+
+.app-content {
+  display: flex;
+  flex-direction: row; /* Side-by-side for navigator and editor */
+  flex-grow: 1;
+  overflow: hidden; /* Prevent overall app from scrolling */
+}
+
+#file-navigator {
+  width: 250px;
+  min-width: 200px; /* Prevent it from becoming too small */
+  background-color: #f0f0f0;
+  overflow-y: auto;
+  padding: 10px;
+  border-right: 1px solid #ccc;
+}
+
+#file-navigator div { /* Styling for individual file/folder items */
+  padding: 5px;
+  cursor: default;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#file-navigator div:hover {
+  background-color: #e0e0e0;
+}
+
+#file-navigator div[style*="cursor: pointer"] { /* Clickable files */
+    cursor: pointer;
+}
+
+
+.editor-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column; /* Keep this as column for current-file-display on top */
+  padding: 0;
+  overflow: hidden; /* Prevent editor-area itself from scrolling */
+}
+
+#current-file-display {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  background-color: #f8f8f8;
+  font-weight: bold;
+  height: 20px; 
+  line-height: 20px;
+  flex-shrink: 0; /* Prevent this from shrinking */
+}
+
+.editor-panes { /* New container for side-by-side editor and preview */
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+#markdown-editor, #markdown-preview {
+  flex-basis: 50%;
+  height: 100%; /* Fill the height of .editor-panes */
+  overflow-y: auto;
+  padding: 10px;
+  box-sizing: border-box;
+  border: none; /* Remove individual borders if .editor-panes has one or they are side-by-side */
+}
+
+#markdown-editor {
+  resize: none;
+  font-family: monospace;
+  border-right: 1px solid #ccc; /* Separator line */
+}
+
+#markdown-preview {
+  background-color: #ffffff; /* Keep preview background clean */
+  /* Add specific styling for generated HTML elements within preview if needed */
+}
+
+.controls {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  background-color: #f8f8f8;
+  display: flex;
+  gap: 10px; /* Space between buttons */
+}
+
+button {
+  padding: 8px 15px;
+  border: 1px solid #ccc;
+  background-color: #e7e7e7;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #d7d7d7;
+}
