@@ -14,5 +14,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.send("save-file", { filePath, content }),
   onFileSaved: (callback) =>
     ipcRenderer.on("file-saved", (_event, filePath) => callback(filePath)),
-  parseMarkdown: (markdownText) => ipcRenderer.invoke('parse-markdown', markdownText)
+  parseMarkdown: (markdownText) => ipcRenderer.invoke('parse-markdown', markdownText),
+  openCommitDialog: () => ipcRenderer.invoke('open-commit-dialog'),
+  performGitOperations: (repoPath, commitMessage) => ipcRenderer.invoke('perform-git-operations', repoPath, commitMessage)
 });

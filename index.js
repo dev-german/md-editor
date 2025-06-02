@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
+const { exec } = require("child_process"); // Import child_process
 
 function createWindow() {
   console.log("Preload script path b:", path.join(__dirname, "preload.js"));
@@ -65,11 +66,11 @@ ipcMain.handle("read-dir", async (event, folderPath) => {
   }
 });
 
-ipcMain.handle('join-path', async (event, ...args) => {
+ipcMain.handle("join-path", async (event, ...args) => {
   try {
     return path.join(...args);
   } catch (error) {
-    console.error('Failed to join path:', error);
+    console.error("Failed to join path:", error);
     throw error;
   }
 });
@@ -100,13 +101,91 @@ ipcMain.handle("read-file", async (event, filePath) => {
 });
 
 // Add marked to the main process
-const marked = require('marked');
+const marked = require("marked");
 
-ipcMain.handle('parse-markdown', async (event, markdownText) => {
+ipcMain.handle("parse-markdown", async (event, markdownText) => {
   try {
     return marked.parse(markdownText);
   } catch (error) {
-    console.error('Failed to parse markdown in main process:', error);
+    console.error("Failed to parse markdown in main process:", error);
     throw error;
   }
+});
+
+// Function to create the commit message dialog window
+function createCommitDialogWindow() {
+  const childWindow = new BrowserWindow({
+    width: 400,
+    height: 200,
+    parent: BrowserWindow.getFocusedWindow(), // Make it a modal
+    modal: true,
+    show: false, // Don't show until ready
+    webPreferences: {
+      preload: path.join(__dirname, 'commit-dialog-preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+
+  childWindow.loadFile('commit-dialog.html');
+
+  childWindow.once('ready-to-show', () => {
+    childWindow.show();
+  });
+
+  return childWindow;
+}
+
+ipcMain.handle('open-commit-dialog', async (event) => {
+  return new Promise((resolve, reject) => {
+    const dialogWindow = createCommitDialogWindow();
+
+    ipcMain.once('commit-message-response', (event, commitMessage) => {
+      dialogWindow.close();
+      resolve(commitMessage);
+    });
+
+    dialogWindow.on('closed', () => {
+      // If the dialog is closed without a message, resolve with null
+      resolve(null);
+    });
+  });
+});
+
+ipcMain.handle('perform-git-operations', async (event, repoPath, commitMessage) => {
+  return new Promise((resolve, reject) => {
+    if (!commitMessage) {
+      return reject(new Error('Commit message cannot be empty. Git operation cancelled.'));
+    }
+
+    const options = { cwd: repoPath }; // Execute commands in the selected folder
+
+    exec('git add .', options, (err, stdout, stderr) => {
+      if (err) {
+        console.error(`git add error: ${stderr}`);
+        return reject(new Error(`git add failed: ${stderr}`));
+      }
+      console.log(`git add stdout: ${stdout}`);
+
+      exec(`git commit -m "${commitMessage}"`, options, (err, stdout, stderr) => {
+        if (err) {
+          console.error(`git commit error: ${stderr}`);
+          if (stderr.includes('nothing to commit')) {
+            return resolve('No changes to commit. Git status clean.');
+          }
+          return reject(new Error(`git commit failed: ${stderr}`));
+        }
+        console.log(`git commit stdout: ${stdout}`);
+
+        exec('git push', options, (err, stdout, stderr) => {
+          if (err) {
+            console.error(`git push error: ${stderr}`);
+            return reject(new Error(`git push failed: ${stderr}`));
+          }
+          console.log(`git push stdout: ${stdout}`);
+          resolve('Changes committed and pushed successfully!');
+        });
+      });
+    });
+  });
 });

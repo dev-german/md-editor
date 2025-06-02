@@ -1,5 +1,6 @@
 const openFolderBtn = document.getElementById('open-folder-btn');
 const saveFileBtn = document.getElementById('save-file-btn');
+const commitPushBtn = document.getElementById('commit-push-btn'); // Get the new button
 const fileNavigator = document.getElementById('file-navigator');
 const markdownEditorElement = document.getElementById('markdown-editor'); // Renamed to avoid conflict
 const currentFileDisplay = document.getElementById('current-file-display');
@@ -48,6 +49,21 @@ saveFileBtn.addEventListener('click', () => {
     window.electronAPI.saveFile(currentOpenFilePath, newContent);
   } else {
     console.warn('No file is currently open. Cannot save.');
+  }
+});
+
+commitPushBtn.addEventListener('click', async () => {
+  try {
+    const commitMessage = await window.electronAPI.openCommitDialog();
+    if (commitMessage !== null) { // If user didn't cancel the dialog
+      const result = await window.electronAPI.performGitOperations(currentRootFolder, commitMessage);
+      alert(result); // Show success or error message
+    } else {
+      alert('Git operation cancelled.');
+    }
+  } catch (error) {
+    alert(`Git operation failed: ${error.message}`);
+    console.error('Git operation failed:', error);
   }
 });
 

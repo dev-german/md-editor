@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';">
+    <title>Commit Message</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; text-align: center; }
+        input { width: 80%; padding: 8px; margin-bottom: 10px; }
+        button { padding: 8px 15px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Enter Commit Message</h2>
+    <input type="text" id="commit-message-input" placeholder="Your commit message...">
+    <button id="commit-btn">Commit</button>
+    <button id="cancel-btn">Cancel</button>
+    <script src="./commit-dialog-renderer.js"></script>
+</body>
+</html>
