@@ -22,20 +22,46 @@ body {
   border-right: 1px solid #ccc;
 }
 
-#file-navigator div { /* Styling for individual file/folder items */
-  padding: 5px;
-  cursor: default;
+#file-navigator ul.folder-list {
+  list-style: none;
+  padding-left: 15px; /* Indent subfolders */
+  margin: 0;
+}
+
+#file-navigator li.list-item {
+  padding: 3px 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-#file-navigator div:hover {
+#file-navigator .folder-name,
+#file-navigator .file-name {
+  display: block; /* Make them block to take full width */
+  padding: 5px;
+  border-radius: 3px;
+}
+
+#file-navigator .folder-name:hover,
+#file-navigator .file-name:hover {
   background-color: #e0e0e0;
 }
 
-#file-navigator div[style*="cursor: pointer"] { /* Clickable files */
+#file-navigator .folder-name {
+  font-weight: bold;
+  color: #333;
+}
+
+#file-navigator .file-name {
+  color: #555;
+}
+
+#file-navigator .file-name[style*="cursor: pointer"] { /* Clickable files */
     cursor: pointer;
+}
+
+#file-navigator .subfolder-container {
+  /* Managed by JS for display: none/block */
 }
 
 
