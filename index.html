@@ -2,9 +2,11 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com;">
     <title>Markdown Editor</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./node_modules/easymde/dist/easymde.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   </head>
   <body>
     <div class="app-content">
@@ -12,7 +14,7 @@
       <div class="editor-area">
         <div id="current-file-display">No file selected</div>
         <div class="editor-panes">
-          <textarea id="markdown-editor" placeholder="Select a Markdown file to begin editing..." readonly></textarea>
+          <textarea id="markdown-editor" placeholder="Select a Markdown file to begin editing..."></textarea>
           <div id="markdown-preview"></div>
         </div>
       </div>
@@ -21,6 +23,7 @@
       <button id="open-folder-btn">Open Project Folder</button>
       <button id="save-file-btn">Save File</button>
     </div>
+    <script src="./node_modules/easymde/dist/easymde.min.js"></script>
     <script src="./renderer.js"></script>
   </body>
 </html>

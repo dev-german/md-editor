@@ -1,17 +1,31 @@
 const openFolderBtn = document.getElementById('open-folder-btn');
 const saveFileBtn = document.getElementById('save-file-btn');
 const fileNavigator = document.getElementById('file-navigator');
-const markdownEditor = document.getElementById('markdown-editor');
+const markdownEditorElement = document.getElementById('markdown-editor'); // Renamed to avoid conflict
 const currentFileDisplay = document.getElementById('current-file-display');
 const markdownPreview = document.getElementById('markdown-preview');
 
 let currentOpenFilePath = null;
 let currentRootFolder = null; // To keep track of the root folder
 
+// Initialize EasyMDE
+const easyMDE = new EasyMDE({
+  element: markdownEditorElement,
+  spellChecker: false, // Disable spell checker if not needed
+  forceSync: true, // Ensure textarea value is always in sync
+  status: false, // Disable status bar if not needed
+  toolbar: [
+    "bold", "italic", "heading", "|",
+    "quote", "unordered-list", "ordered-list", "|",
+    "link", "image", "table", "|",
+    "code", "guide"
+  ]
+});
+
 async function updatePreview() {
   if (window.electronAPI && window.electronAPI.parseMarkdown) {
     try {
-      const markdownText = markdownEditor.value;
+      const markdownText = easyMDE.value(); // Get content from EasyMDE
       const htmlContent = await window.electronAPI.parseMarkdown(markdownText);
       markdownPreview.innerHTML = htmlContent;
     } catch (e) {
@@ -21,7 +35,8 @@ async function updatePreview() {
   }
 }
 
-markdownEditor.addEventListener('input', updatePreview);
+// Listen for changes in EasyMDE
+easyMDE.codemirror.on("change", updatePreview);
 
 openFolderBtn.addEventListener('click', () => {
   window.electronAPI.openFolderDialog();
@@ -29,7 +44,7 @@ openFolderBtn.addEventListener('click', () => {
 
 saveFileBtn.addEventListener('click', () => {
   if (currentOpenFilePath) {
-    const newContent = markdownEditor.value;
+    const newContent = easyMDE.value(); // Get content from EasyMDE
     window.electronAPI.saveFile(currentOpenFilePath, newContent);
   } else {
     console.warn('No file is currently open. Cannot save.');
@@ -83,14 +98,14 @@ async function renderDirectoryContents(containerElement, folderPath) {
               try {
                 currentOpenFilePath = fullPath;
                 const content = await window.electronAPI.readFile(fullPath);
-                markdownEditor.value = content;
-                markdownEditor.readOnly = false;
+                easyMDE.value(content); // Set content using EasyMDE
+                easyMDE.codemirror.setOption("readOnly", false); // Enable editing
                 currentFileDisplay.textContent = item;
                 updatePreview();
               } catch (e) {
                 console.error(`Error reading file ${fullPath}:`, e);
-                markdownEditor.value = `Error reading file: ${e.message}`;
-                markdownEditor.readOnly = true;
+                easyMDE.value(`Error reading file: ${e.message}`); // Set error content
+                easyMDE.codemirror.setOption("readOnly", true); // Disable editing
                 currentFileDisplay.textContent = `Error: ${item}`;
                 currentOpenFilePath = null;
                 updatePreview();
@@ -115,8 +130,8 @@ window.electronAPI.onSelectedFolder(async (folderPath) => {
   console.log('Selected folder:', folderPath);
   currentRootFolder = folderPath; // Set the root folder
   fileNavigator.innerHTML = '';
-  markdownEditor.value = '';
-  markdownEditor.readOnly = true;
+  easyMDE.value(''); // Clear EasyMDE content
+  easyMDE.codemirror.setOption("readOnly", true); // Set EasyMDE to read-only
   markdownPreview.innerHTML = '';
   currentFileDisplay.textContent = 'No file selected';
   currentOpenFilePath = null;
